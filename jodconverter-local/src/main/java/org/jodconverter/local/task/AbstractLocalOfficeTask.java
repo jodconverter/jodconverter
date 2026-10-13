@@ -33,13 +33,8 @@ import java.util.Objects;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lib.uno.adapter.ByteArrayToXInputStreamAdapter;
-import com.sun.star.task.DocumentMSPasswordRequest;
-import com.sun.star.task.DocumentPasswordRequest;
 import com.sun.star.task.ErrorCodeIOException;
-import com.sun.star.task.PasswordRequest;
 import com.sun.star.task.PasswordRequestMode;
-import com.sun.star.task.XInteractionHandler;
-import com.sun.star.task.XInteractionRequest;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -77,64 +72,6 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
   // Set when the office dropped the connection while loading with a password: LibreOffice 24+
   // asks nothing and disconnects when the password given is wrong.
   private boolean wrongPassword;
-
-  /** Handler used to detect password-protected file. */
-  private static final class PasswordInteractionHandler implements XInteractionHandler {
-
-    private PasswordRequest passwordRequest;
-    private String documentName;
-
-    /**
-     * Gets the password interaction request that has been made, if any.
-     *
-     * @return The password interaction request that has been made, ot null if no password
-     *     interaction request was made.
-     */
-    /* default */ PasswordRequest getPasswordRequest() {
-      return passwordRequest;
-    }
-
-    /**
-     * Gets whether a password interaction request has been made.
-     *
-     * @return {@code true} if a password interaction request was made, {@code false} otherwise.
-     */
-    /* default */ boolean hasPasswordInteractionRequest() {
-      return passwordRequest != null;
-    }
-
-    /**
-     * Gets the name of the document (more properly, the URL of the document), for which the request
-     * was made.
-     *
-     * @return The name of the document for which the request was made, null if no password
-     *     interaction request was made, or "NA" if an interaction was made, but the document name
-     *     is unknown.
-     */
-    /* default */ String getDocumentName() {
-      return documentName;
-    }
-
-    @Override
-    public void handle(final XInteractionRequest interactionRequest) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Interaction detected with request {}", interactionRequest.getRequest());
-      }
-
-      final var request = interactionRequest.getRequest();
-
-      if (request instanceof PasswordRequest pwdRequest) {
-        passwordRequest = pwdRequest;
-        documentName = "NA";
-        if (request instanceof DocumentPasswordRequest docRequest) {
-          documentName = docRequest.Name;
-        } else if (request instanceof DocumentMSPasswordRequest msDocRequest) {
-          documentName = msDocRequest.Name;
-        }
-        LOGGER.debug("Password interaction detected for {}", documentName);
-      }
-    }
-  }
 
   /**
    * Adds properties to a map of properties, when there are some.
@@ -249,6 +186,12 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       // A wrong password on a Microsoft document aborts the type detection after the request.
       handlePasswordProtection(sourceFile);
       throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
+    } catch (com.sun.star.uno.RuntimeException exception) {
+      // The same abort, with the office libraries of LibreOffice, where the exception of the
+      // type detection (an IllegalArgumentException) is a runtime exception. Any other runtime
+      // exception is thrown as it is: the worker reads a lost connection from it.
+      handlePasswordProtection(sourceFile);
+      throw exception;
     }
   }
 
@@ -258,24 +201,11 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
 
     final XComponent document;
     try {
-      if (useStreamAdapters) {
-        try {
-          final var bytes = Files.readAllBytes(sourceFile.toPath());
-          loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
-
-          document =
-              loader.loadComponentFromURL(
-                  "private:stream", "_blank", 0, toUnoProperties(loadProps));
-
-        } catch (IOException exception) {
-          throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
-        }
-      } else {
-        document =
-            loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
-      }
+      document = load(loader, sourceFile, loadProps);
     } catch (com.sun.star.lang.DisposedException exception) {
-      // LibreOffice 24+ will throw this exception for password protection.
+      // With the office libraries of OpenOffice, a wrong password given to LibreOffice 24 or
+      // later ends the connection: the office reports its error with a type these libraries do
+      // not know.
       handlePasswordProtection(sourceFile);
       if (loadProps.containsKey(PASSWORD_PROPERTY)) {
         wrongPassword = true;
@@ -285,11 +215,60 @@ public abstract class AbstractLocalOfficeTask extends AbstractOfficeTask
       throw exception;
     }
 
-    // Handle password protection request to throw a meaningful exception, if required.
     if (document == null) {
+      // Handle password protection request to throw a meaningful exception, if required.
       handlePasswordProtection(sourceFile);
+      handleWrongPassword(loader, sourceFile, loadProps);
     }
     return document;
+  }
+
+  // Loads the file, through a stream or from its URL.
+  private XComponent load(
+      final XComponentLoader loader, final File sourceFile, final Map<String, Object> loadProps)
+      throws com.sun.star.uno.Exception, OfficeException {
+
+    if (useStreamAdapters) {
+      try {
+        final var bytes = Files.readAllBytes(sourceFile.toPath());
+        loadProps.put("InputStream", new ByteArrayToXInputStreamAdapter(bytes));
+
+        return loader.loadComponentFromURL(
+            "private:stream", "_blank", 0, toUnoProperties(loadProps));
+
+      } catch (IOException exception) {
+        throw new OfficeException(ERROR_MESSAGE_LOAD + sourceFile.getName(), exception);
+      }
+    }
+    return loader.loadComponentFromURL(toUrl(sourceFile), "_blank", 0, toUnoProperties(loadProps));
+  }
+
+  // Throws the password exception when a document that was not loaded with the password given
+  // is a protected one. For a wrong password on an OpenDocument file, the office does not ask
+  // again: it reports a general input/output error, as for a file it cannot read, and loads
+  // nothing. To tell the two apart, the file is loaded once more without the password: a
+  // protected document then makes the office ask for it.
+  private void handleWrongPassword(
+      final XComponentLoader loader, final File sourceFile, final Map<String, Object> loadProps)
+      throws OfficeException {
+
+    if (!loadProps.containsKey(PASSWORD_PROPERTY)) {
+      return;
+    }
+
+    final var request =
+        PasswordInteractionHandler.requestOf(
+            handler -> {
+              final var probeProps = new HashMap<>(loadProps);
+              probeProps.remove(PASSWORD_PROPERTY);
+              probeProps.put("InteractionHandler", handler);
+              // Nothing is expected to load; a document that does is closed.
+              closeDocument(load(loader, sourceFile, probeProps));
+            });
+    if (request != null) {
+      wrongPassword = true;
+      throw new PasswordProtectedException("Wrong password for " + sourceFile.getName(), request);
+    }
   }
 
   /**
