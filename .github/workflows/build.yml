@@ -128,16 +128,65 @@ jobs:
             **/build/test-results/
           retention-days: 7
 
+  # The local module is built and tested above with the office libraries of OpenOffice, its
+  # default (see jodconverter-local/build.gradle.kts), while applications use those of LibreOffice
+  # through jodconverter-local-lo. The two do not behave the same: an exception that is checked in
+  # the first is a runtime exception in the second, and the first do not know the newer types the
+  # office sends, which ends the connection instead of reaching the code. A bug of version 5.1.0
+  # (a wrong password that was not reported as such) lived in that gap. This job runs the tests
+  # of the local module with the libraries that applications use.
+  test-libreoffice-libraries:
+    name: test (LibreOffice libraries)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🛡️ Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: ⚙️ Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: 📥 Install LibreOffice
+        timeout-minutes: 10
+        run: |
+          sudo apt-get -q update
+          sudo apt-get -y -q install libreoffice
+          soffice --version
+
+      - name: 🛠️ Test the local module with the LibreOffice libraries
+        run: ./gradlew :jodconverter-local:test :jodconverter-local:integrationTest -PuseLibreOffice --continue --stacktrace
+
+      - name: 📤 Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports-libreoffice-libraries
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          retention-days: 7
+
   # The single check to require in the branch rulesets: it passes only when every OS that is
-  # not allowed to fail passed.
+  # not allowed to fail passed, and the tests with the LibreOffice libraries too.
   # Rename it only together with the rulesets, or pull requests wait forever for a check
   # that no longer reports.
   build:
     name: build
     if: always()
-    needs: test
+    needs: [test, test-libreoffice-libraries]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: ✅ Check the result of every OS
-        run: test "${{ needs.test.result }}" = "success"
+      - name: ✅ Check the result of every OS and of the LibreOffice libraries
+        run: |
+          test "${{ needs.test.result }}" = "success"
+          test "${{ needs.test-libreoffice-libraries.result }}" = "success"
