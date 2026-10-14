@@ -2681,7 +2681,7 @@ is gone.</p>
 </tr>
 <tr>
 <td><code>pages(String)</code></td>
-<td>The pages to export, such as <code>1-3,7</code>; all of them by default. A page beyond the last one fails the export.</td>
+<td>The pages to export, such as <code>1-3,7</code>; all of them by default. A page beyond the last one fails the export with a <code>PageOutOfRangeException</code>, whose <code>getPageCount()</code> gives the number of pages of the document.</td>
 </tr>
 <tr>
 <td><code>hiddenSlides(bool)</code></td>
