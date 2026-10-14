@@ -33,6 +33,11 @@ import org.slf4j.LoggerFactory;
 /**
  * A process started by JODConverter, whose standard and error outputs are logged by two daemon
  * threads, so that the process never blocks on a full output buffer.
+ *
+ * <p>The standard output is logged as information and the error output as warnings, not as errors:
+ * an office writes on its error output things that are no failure of a conversion (a message of its
+ * XML parser at the first start of a profile, for example), and JODConverter reports what fails
+ * with an exception, whatever the office wrote. Blank lines are not logged.
  */
 class VerboseProcess {
 
@@ -46,7 +51,7 @@ class VerboseProcess {
     Objects.requireNonNull(process, "process must not be null");
     this.process = process;
     pump("jodconverter-process-out-" + process.pid(), process.inputReader(), LOGGER::info);
-    pump("jodconverter-process-err-" + process.pid(), process.errorReader(), LOGGER::error);
+    pump("jodconverter-process-err-" + process.pid(), process.errorReader(), LOGGER::warn);
   }
 
   private static void pump(
@@ -56,7 +61,7 @@ class VerboseProcess {
         new Thread(
             () -> {
               try (reader) {
-                reader.lines().forEach(logger);
+                reader.lines().filter(line -> !line.isBlank()).forEach(logger);
               } catch (IOException ex) {
                 LOGGER.trace("Could not read the output of the process", ex);
               }
