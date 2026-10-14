@@ -67,12 +67,7 @@ nav = [
       { RemoteConverter = "configuration/remote-converter.md" },
     ] },
   ] },
-  { Samples = [
-    "samples/index.md",
-    { "Basic Web Application" = "samples/basic-webapp.md" },
-    { "Spring Boot REST API" = "samples/spring-boot-rest.md" },
-    { "Spring Boot Web Application" = "samples/spring-boot-webapp.md" },
-  ] },
+  { Samples = "samples/index.md" },
   { FAQ = "faq.md" },
   { Contributing = [
     "contributing/index.md",
