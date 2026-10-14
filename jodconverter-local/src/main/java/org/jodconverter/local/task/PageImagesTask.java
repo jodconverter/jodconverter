@@ -52,6 +52,7 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.LocalOfficeUtils;
+import org.jodconverter.local.office.PageOutOfRangeException;
 import org.jodconverter.local.office.utils.Lo;
 
 /**
@@ -214,8 +215,7 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
     final var drawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
     final var pageCount = drawPages.getCount();
     if (pages != null && pages.last() > pageCount) {
-      throw new OfficeException(
-          "Page " + pages.last() + " does not exist: the document has " + pageCount + " pages");
+      throw new PageOutOfRangeException(pages.last(), pageCount);
     }
 
     // The page numbers are padded to the width of the page count, so that the files sort.

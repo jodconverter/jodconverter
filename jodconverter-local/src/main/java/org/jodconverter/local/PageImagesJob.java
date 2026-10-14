@@ -181,7 +181,9 @@ public final class PageImagesJob {
 
   /**
    * Specifies the pages to export, as a range such as {@code 1-3,7}; all of them by default. A page
-   * beyond the last one fails the export.
+   * beyond the last one fails the export with a {@link
+   * org.jodconverter.local.office.PageOutOfRangeException}, which gives the number of pages of the
+   * document.
    *
    * @param pages The range, or null for all the pages.
    * @return This job.
