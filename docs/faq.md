@@ -210,8 +210,15 @@ class: hide-toc
 
 ??? question "The logs show `Entity: line 1: parser error : Document is empty` when an office process starts. Is it a problem?"
 
-    No. LibreOffice writes this message on its error output when it starts with a new profile, and
-    **JODConverter** relays the output of the office process to its logs. Conversions are not affected.
+    No. LibreOffice writes this message on its error output at the first start of a profile, when it reads the file
+    where it keeps what it knows of the OpenCL devices of the machine (`cache/opencl_profile.xml`) before that file
+    exists. By default each office process starts with a new profile, so the message comes at each start.
+    Conversions are not affected.
+
+    **JODConverter** relays the output of the office process to its logs, with the
+    `org.jodconverter.local.office.VerboseProcess` logger: the standard output at the `INFO` level and the error
+    output at the `WARN` level (`ERROR` before version 5.1.1). Set that logger to `ERROR` or `OFF` to leave the output
+    of the office out of your logs.
 
 ??? question "Hidden sheets appear when converting a spreadsheet to PDF. How can I skip them?"
 
