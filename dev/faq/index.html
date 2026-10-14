@@ -2830,8 +2830,14 @@ document always fails, try converting it with LibreOffice alone.</p>
 </details>
 <details class="question">
 <summary>The logs show <code>Entity: line 1: parser error : Document is empty</code> when an office process starts. Is it a problem?</summary>
-<p>No. LibreOffice writes this message on its error output when it starts with a new profile, and
-<strong>JODConverter</strong> relays the output of the office process to its logs. Conversions are not affected.</p>
+<p>No. LibreOffice writes this message on its error output at the first start of a profile, when it reads the file
+where it keeps what it knows of the OpenCL devices of the machine (<code>cache/opencl_profile.xml</code>) before that file
+exists. By default each office process starts with a new profile, so the message comes at each start.
+Conversions are not affected.</p>
+<p><strong>JODConverter</strong> relays the output of the office process to its logs, with the
+<code>org.jodconverter.local.office.VerboseProcess</code> logger: the standard output at the <code>INFO</code> level and the error
+output at the <code>WARN</code> level (<code>ERROR</code> before version 5.1.1). Set that logger to <code>ERROR</code> or <code>OFF</code> to leave the output
+of the office out of your logs.</p>
 </details>
 <details class="question">
 <summary>Hidden sheets appear when converting a spreadsheet to PDF. How can I skip them?</summary>
