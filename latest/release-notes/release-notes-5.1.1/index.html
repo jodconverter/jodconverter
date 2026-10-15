@@ -1026,6 +1026,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.1
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
         
   
@@ -1196,33 +1223,6 @@
     
   
   Migration 4.4.8
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration-guides/migration-guide-4.4.7/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Migration 4.4.7
 
     
   </span>
@@ -2560,7 +2560,7 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="v511-2026-10-15"><a href="https://github.com/jodconverter/jodconverter/tree/v5.1.1">v5.1.1</a> (2026-10-15)<a class="headerlink" href="#v511-2026-10-15" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1">Full Changelog</a></p>
-<p>A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.</p>
+<p>A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added. The <a href="../../migration-guides/migration-guide-5.1.1/">migration guide</a> says what to check.</p>
 <h3 id="implemented-enhancements"><strong>Implemented enhancements</strong><a class="headerlink" href="#implemented-enhancements" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>PageOutOfRangeException</code>.</strong> A <a href="../../getting-started/page-images/">page export</a> whose range goes beyond the last page of the document failed with a plain <code>OfficeException</code>, the same type as a failure of the office. It now fails with a <code>PageOutOfRangeException</code>, a subclass of <code>OfficeException</code> in <code>org.jodconverter.local.office</code>, which gives the page asked for (<code>getPage()</code>) and the number of pages of the document (<code>getPageCount()</code>), so that an application can tell a wrong request from a failed office. The message is unchanged, and code that catches <code>OfficeException</code> keeps working (<a href="https://github.com/jodconverter/jodconverter/pull/591">#591</a>).</li>
