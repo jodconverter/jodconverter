@@ -1,6 +1,6 @@
 # Changelog
 
-## [v5.1.1](https://github.com/jodconverter/jodconverter/tree/v5.1.1) (2026-10-14)
+## [v5.1.1](https://github.com/jodconverter/jodconverter/tree/v5.1.1) (2026-10-15)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1)
 
