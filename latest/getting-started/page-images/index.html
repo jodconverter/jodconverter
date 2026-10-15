@@ -313,32 +313,14 @@
   
   
   
-    
-      
-      
+    <li class="md-tabs__item">
+      <a href="../../samples/" class="md-tabs__link">
         
-          
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../samples/" class="md-tabs__link">
-          
   
   Samples
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -613,6 +595,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.1
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
         
   
@@ -783,33 +792,6 @@
     
   
   Release 4.4.8
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../release-notes/release-notes-4.4.7/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Release 4.4.7
 
     
   </span>
@@ -2203,36 +2185,9 @@
   
   
   
-    
-    
-      
+    <li class="md-nav__item">
+      <a href="../../samples/" class="md-nav__link">
         
-          
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="../../samples/" class="md-nav__link ">
-              
   
   
   <span class="md-ellipsis">
@@ -2245,113 +2200,7 @@
   
   
 
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
-        
-        
-          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-            <label class="md-nav__title" for="__nav_4">
-              <span class="md-nav__icon md-icon"></span>
-              
-  
-  Samples
-
-            </label>
-            <ul class="md-nav__list" data-md-scrollfix>
-              
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/basic-webapp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Basic Web Application
-
-    
-  </span>
-  
-  
-
       </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/spring-boot-rest/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Spring Boot REST API
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/spring-boot-webapp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Spring Boot Web Application
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-            </ul>
-          </nav>
-        
-      
     </li>
   
 
@@ -2665,7 +2514,7 @@ is gone.</p>
 </tr>
 <tr>
 <td><code>size(width, height)</code></td>
-<td>The size of the images, in pixels. Without a size, the images have the size of the page at 96 dpi.</td>
+<td>The size of the images, in pixels. Without a size, the images have the size of the page at 96 dpi, whatever the resolution of the display of the machine.</td>
 </tr>
 <tr>
 <td><code>width(int)</code></td>
@@ -2681,7 +2530,7 @@ is gone.</p>
 </tr>
 <tr>
 <td><code>pages(String)</code></td>
-<td>The pages to export, such as <code>1-3,7</code>; all of them by default. A page beyond the last one fails the export.</td>
+<td>The pages to export, such as <code>1-3,7</code>; all of them by default. A page beyond the last one fails the export with a <code>PageOutOfRangeException</code>, whose <code>getPageCount()</code> gives the number of pages of the document.</td>
 </tr>
 <tr>
 <td><code>hiddenSlides(bool)</code></td>

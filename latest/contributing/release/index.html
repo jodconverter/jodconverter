@@ -311,32 +311,14 @@
   
   
   
-    
-      
-      
+    <li class="md-tabs__item">
+      <a href="../../samples/" class="md-tabs__link">
         
-          
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../samples/" class="md-tabs__link">
-          
   
   Samples
 
-        </a>
-      </li>
-    
+      </a>
+    </li>
   
 
       
@@ -613,6 +595,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../release-notes/release-notes-5.1.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Release 5.1.1
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../release-notes/release-notes-5.1.0/" class="md-nav__link">
         
   
@@ -783,33 +792,6 @@
     
   
   Release 4.4.8
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../release-notes/release-notes-4.4.7/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Release 4.4.7
 
     
   </span>
@@ -2116,36 +2098,9 @@
   
   
   
-    
-    
-      
+    <li class="md-nav__item">
+      <a href="../../samples/" class="md-nav__link">
         
-          
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="../../samples/" class="md-nav__link ">
-              
   
   
   <span class="md-ellipsis">
@@ -2158,113 +2113,7 @@
   
   
 
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
-        
-        
-          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-            <label class="md-nav__title" for="__nav_4">
-              <span class="md-nav__icon md-icon"></span>
-              
-  
-  Samples
-
-            </label>
-            <ul class="md-nav__list" data-md-scrollfix>
-              
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/basic-webapp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Basic Web Application
-
-    
-  </span>
-  
-  
-
       </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/spring-boot-rest/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Spring Boot REST API
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../samples/spring-boot-webapp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Spring Boot Web Application
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-            </ul>
-          </nav>
-        
-      
     </li>
   
 
@@ -2738,8 +2587,11 @@ credentials and the signing key, which live in the repository secrets; the rest 
 <li><strong>Next snapshot.</strong> On a branch from <code>develop</code>:
     <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>setVersion<span class="w"> </span>-PnewVersion<span class="o">=</span>X.Y.Z+1-SNAPSHOT
 </code></pre></div>
-    Commit <code>Post release X.Y.Z</code> and open its pull request to <code>develop</code>. The merge commit of the release leaves
-    <code>master</code> one commit ahead of <code>develop</code>, with no change in it: no need to merge it back.</li>
+    Commit <code>Post release X.Y.Z</code> and open its pull request to <code>develop</code>.</li>
+<li><strong>Merge <code>master</code> back.</strong> The merge commit of the release leaves <code>master</code> one commit ahead of <code>develop</code>. It changes no file, but GitHub counts it, and the count grows at each release. On a branch from <code>develop</code>:
+    <div class="language-bash highlight"><pre><span></span><code>git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>origin/master<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Merge master back into develop after the release of X.Y.Z"</span>
+</code></pre></div>
+    Open its pull request to <code>develop</code>, whose diff is empty, and merge it with a <strong>merge commit</strong>: a squash would make a new commit that <code>master</code> does not know, and <code>master</code> would stay ahead.</li>
 <li><strong>Milestone.</strong> Close the milestone of the release and create the next one.</li>
 </ol>
 <h2 id="secrets-of-the-release-workflow">Secrets of the release workflow<a class="headerlink" href="#secrets-of-the-release-workflow" title="Permanent link">&para;</a></h2>
