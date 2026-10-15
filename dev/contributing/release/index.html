@@ -900,6 +900,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../migration-guides/migration-guide-5.1.1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migration 5.1.1
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../migration-guides/migration-guide-5.1.0/" class="md-nav__link">
         
   
@@ -1070,33 +1097,6 @@
     
   
   Migration 4.4.8
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-                
-              
-                
-                  
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration-guides/migration-guide-4.4.7/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Migration 4.4.7
 
     
   </span>
@@ -2542,8 +2542,9 @@ credentials and the signing key, which live in the repository secrets; the rest 
     <code>documentation</code>, <code>dependencies</code>): the release notes that GitHub generates are grouped by label
     (<code>.github/release.yml</code>).</li>
 <li><strong>Release notes page.</strong> Write <code>docs/release-notes/release-notes-X.Y.Z.md</code> and link it from
-    <code>docs/release-notes/index.md</code> and the navigation in <code>zensical.toml</code>. For a major or minor version, the migration
-    guide <code>docs/migration-guides/migration-guide-X.Y.Z.md</code> exists and is linked the same way.</li>
+    <code>docs/release-notes/index.md</code> and the navigation in <code>zensical.toml</code>. Every version, a patch release too, has its
+    migration guide <code>docs/migration-guides/migration-guide-X.Y.Z.md</code>, linked the same way: what users have to check
+    or change, if anything.</li>
 <li><strong>CHANGELOG.md.</strong> Add the <code>X.Y.Z</code> block, one line per pull request with its number, from:
     <div class="language-bash highlight"><pre><span></span><code>gh<span class="w"> </span>pr<span class="w"> </span>list<span class="w"> </span>--state<span class="w"> </span>merged<span class="w"> </span>--base<span class="w"> </span>develop<span class="w"> </span>--search<span class="w"> </span><span class="s2">"merged:&gt;YYYY-MM-DD"</span><span class="w"> </span>--json<span class="w"> </span>number,title<span class="w"> </span>--jq<span class="w"> </span><span class="s1">'.[] | "- \(.title) (#\(.number))"'</span>
 </code></pre></div></li>
