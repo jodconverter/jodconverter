@@ -52,6 +52,7 @@ import org.jodconverter.local.filter.FilterChain;
 import org.jodconverter.local.filter.RefreshFilter;
 import org.jodconverter.local.office.LocalOfficeContext;
 import org.jodconverter.local.office.LocalOfficeUtils;
+import org.jodconverter.local.office.PageOutOfRangeException;
 import org.jodconverter.local.office.utils.Lo;
 
 /**
@@ -65,6 +66,9 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(PageImagesTask.class);
 
   private static final String GRAPHIC_EXPORT_FILTER = "com.sun.star.drawing.GraphicExportFilter";
+  // The resolution of an image exported without a size, and the size of a page, in 1/100 mm.
+  private static final float DEFAULT_DPI = 96F;
+  private static final float HUNDREDTHS_OF_MM_PER_INCH = 2540F;
   private static final Pattern RANGE_PATTERN =
       Pattern.compile("\\s*(\\d+)\\s*(?:-\\s*(\\d+)\\s*)?");
 
@@ -90,7 +94,8 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
    * @param baseName The start of the names of the images, followed by the page number.
    * @param format The image format.
    * @param width The width of the images in pixels, or 0 to take it from the height and the size of
-   *     the page, or from the page size at 96 dpi when both are 0.
+   *     the page, or from the page size at 96 dpi when both are 0, whatever the resolution of the
+   *     display.
    * @param height The height of the images in pixels, or 0.
    * @param quality The quality of a lossy format, 1 to 100.
    * @param pages The pages to export, as a range such as {@code 1-3,7}, or null for all of them.
@@ -214,8 +219,7 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
     final var drawPages = Lo.qi(XDrawPagesSupplier.class, document).getDrawPages();
     final var pageCount = drawPages.getCount();
     if (pages != null && pages.last() > pageCount) {
-      throw new OfficeException(
-          "Page " + pages.last() + " does not exist: the document has " + pageCount + " pages");
+      throw new PageOutOfRangeException(pages.last(), pageCount);
     }
 
     // The page numbers are padded to the width of the page count, so that the files sort.
@@ -253,23 +257,27 @@ public class PageImagesTask extends AbstractLocalOfficeTask {
       throws Exception {
 
     final var filterData = new LinkedHashMap<String, Object>();
-    if (width > 0 || height > 0) {
-      var pixelWidth = width;
-      var pixelHeight = height;
-      if (pixelWidth == 0 || pixelHeight == 0) {
-        // The missing dimension keeps the proportions of the page (sizes in 1/100 mm).
-        final var properties = Lo.qi(XPropertySet.class, page);
-        final var pageWidth = (Integer) properties.getPropertyValue("Width");
-        final var pageHeight = (Integer) properties.getPropertyValue("Height");
-        if (pixelWidth == 0) {
-          pixelWidth = Math.max(1, Math.round((float) pixelHeight * pageWidth / pageHeight));
-        } else {
-          pixelHeight = Math.max(1, Math.round((float) pixelWidth * pageHeight / pageWidth));
-        }
+    var pixelWidth = width;
+    var pixelHeight = height;
+    if (pixelWidth == 0 || pixelHeight == 0) {
+      final var properties = Lo.qi(XPropertySet.class, page);
+      final var pageWidth = (Integer) properties.getPropertyValue("Width");
+      final var pageHeight = (Integer) properties.getPropertyValue("Height");
+      if (pixelWidth == 0 && pixelHeight == 0) {
+        // Without a size, the size of the page at 96 dpi. Left to the office, the size would
+        // follow the resolution of the display of the machine, which differs from one machine to
+        // another: 120 dpi on Windows with a display scaling of 125%.
+        pixelWidth = Math.max(1, Math.round(pageWidth * DEFAULT_DPI / HUNDREDTHS_OF_MM_PER_INCH));
+        pixelHeight = Math.max(1, Math.round(pageHeight * DEFAULT_DPI / HUNDREDTHS_OF_MM_PER_INCH));
+      } else if (pixelWidth == 0) {
+        // The missing dimension keeps the proportions of the page.
+        pixelWidth = Math.max(1, Math.round((float) pixelHeight * pageWidth / pageHeight));
+      } else {
+        pixelHeight = Math.max(1, Math.round((float) pixelWidth * pageHeight / pageWidth));
       }
-      filterData.put("PixelWidth", pixelWidth);
-      filterData.put("PixelHeight", pixelHeight);
     }
+    filterData.put("PixelWidth", pixelWidth);
+    filterData.put("PixelHeight", pixelHeight);
     if (format.lossy()) {
       filterData.put("Quality", quality);
     }

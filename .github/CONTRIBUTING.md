@@ -29,7 +29,10 @@ Always use the Gradle wrapper (`./gradlew`, or `gradlew.bat` on Windows).
 | Everything except the integration tests | `./gradlew build -x javadoc -x integrationTest`                              |
 | Unit tests of one module                | `./gradlew :jodconverter-local:test`                                         |
 | Integration tests of one module         | `./gradlew :jodconverter-local:integrationTest`                              |
+| Local module, with the LibreOffice libraries | `./gradlew -PuseLibreOffice :jodconverter-local:test :jodconverter-local:integrationTest` |
 | One test class                          | `./gradlew :jodconverter-core:test --tests "org.jodconverter.core.SomeTest"` |
+
+The local module is built and tested with the office libraries of OpenOffice by default, and applications use those of LibreOffice (`jodconverter-local-lo`). They do not behave the same with exceptions and with the newer types of the office, so a change that touches the loading or the storing of documents is tested both ways; CI does it in the "test (LibreOffice libraries)" job.
 
 Unit tests live in `src/test/java`. Tests that need a running office live in `src/integTest/java`.
 

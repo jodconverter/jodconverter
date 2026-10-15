@@ -16,6 +16,7 @@ Always the wrapper. `.github/CONTRIBUTING.md` has the table of commands; the ess
 - `./gradlew build -x javadoc -x integrationTest`: without the tests that need an office.
 - `./gradlew spotlessApply`: format before committing; `spotlessCheck` fails the build otherwise.
 - Unit tests are in `src/test/java`; tests that need a running office or a WireMock server are in `src/integTest/java` and run with the `integrationTest` task.
+- `./gradlew -PuseLibreOffice :jodconverter-local:test :jodconverter-local:integrationTest`: the local module with the office libraries of LibreOffice, the ones applications use. The default is those of OpenOffice, which behave differently (checked or runtime exceptions, unknown newer types): run both for a change that touches UNO calls.
 
 Integration tests start office processes on fixed ports (2002 and 2099): never run two integration test runs at once on the same machine, including from another checkout. They need LibreOffice installed in its default location; the `jodconverter-remote` ones need no office.
 

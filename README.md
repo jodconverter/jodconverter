@@ -5,6 +5,7 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15365/badge)](https://www.bestpractices.dev/projects/15365)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central Version](https://img.shields.io/maven-central/v/org.jodconverter/jodconverter-local)](https://central.sonatype.com/artifact/org.jodconverter/jodconverter-local)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://jodconverter.github.io/jodconverter/latest/)
 [![Javadocs](https://javadoc.io/badge/org.jodconverter/jodconverter-local.svg)](https://javadoc.io/doc/org.jodconverter/jodconverter-local)
 [![Join the chat at https://gitter.im/jodconverter/Lobby](https://badges.gitter.im/jodconverter/Lobby.svg)](https://gitter.im/jodconverter/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink.svg)](https://github.com/sponsors/jodconverter)
@@ -45,12 +46,12 @@ Add the library, here for LibreOffice (see the [modules](https://jodconverter.gi
 <dependency>
     <groupId>org.jodconverter</groupId>
     <artifactId>jodconverter-local-lo</artifactId>
-    <version>5.1.0</version>
+    <version>5.1.1</version>
 </dependency>
 ```
 
 ```kotlin
-implementation("org.jodconverter:jodconverter-local-lo:5.1.0")
+implementation("org.jodconverter:jodconverter-local-lo:5.1.1")
 ```
 
 Then start an office manager once, and convert:
@@ -86,8 +87,8 @@ An office manager is meant to live as long as the application, and to be shared 
 Add the starter next to the library:
 
 ```kotlin
-implementation("org.jodconverter:jodconverter-spring-boot-starter:5.1.0")
-implementation("org.jodconverter:jodconverter-local-lo:5.1.0")
+implementation("org.jodconverter:jodconverter-spring-boot-starter:5.1.1")
+implementation("org.jodconverter:jodconverter-local-lo:5.1.1")
 ```
 
 enable it:

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.jodconverter.local.ResourceUtil.documentFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.office.PasswordProtectedException;
@@ -126,6 +128,41 @@ class PasswordITest {
                       .execute())
           .withMessage("Wrong password for " + source.getName());
     }
+  }
+
+  @Test
+  @Order(5)
+  void withAWrongPasswordAndAStream_ShouldThrowPasswordProtectedException(
+      final OfficeManager manager) throws IOException {
+
+    // A stream has no name: the office knows nothing of the document but its content.
+    for (final var source : List.of(protectedOdt, protectedDocx)) {
+      try (var input = Files.newInputStream(source.toPath())) {
+        assertThatExceptionOfType(PasswordProtectedException.class)
+            .isThrownBy(
+                () ->
+                    LocalConverter.make(manager)
+                        .convert(input)
+                        .to(new ByteArrayOutputStream())
+                        .as(DefaultDocumentFormatRegistry.PDF)
+                        .password("wrong")
+                        .execute())
+            .withMessageStartingWith("Wrong password for ");
+      }
+    }
+  }
+
+  @Test
+  @Order(6)
+  void afterAWrongPassword_ShouldStillConvertWithTheRightOne(
+      final @TempDir File testFolder, final OfficeManager manager)
+      throws OfficeException, IOException {
+
+    final var target = new File(testFolder, "odt.txt");
+
+    LocalConverter.make(manager).convert(protectedOdt).to(target).password(PASSWORD).execute();
+
+    assertThat(text(target)).contains("Test document");
   }
 
   @Test

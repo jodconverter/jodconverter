@@ -41,6 +41,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.jodconverter.core.office.OfficeException;
 import org.jodconverter.core.office.OfficeManager;
 import org.jodconverter.local.filter.PagesSelectorFilter;
+import org.jodconverter.local.office.PageOutOfRangeException;
 
 /**
  * Contains tests for the export of the pages of a presentation or a drawing as images, with a real
@@ -87,7 +88,8 @@ class PageImagesITest {
     assertThat(images)
         .extracting(File::getName)
         .containsExactly("impress-1.png", "impress-2.png", "impress-3.png");
-    // Without a size, the image has the size of the page at 96 dpi (a 28 x 15.75 cm slide).
+    // Without a size, the image has the size of the page at 96 dpi (a 28 x 15.75 cm slide), also
+    // on a machine whose display has another resolution (Windows with a display scaling).
     final var image = read(images.get(0));
     assertThat(image.getWidth()).isBetween(1000, 1100);
     assertThat(image.getHeight()).isBetween(560, 620);
@@ -189,18 +191,23 @@ class PageImagesITest {
   }
 
   @Test
-  void withPageBeyondTheLast_ShouldThrowOfficeException(
+  void withPageBeyondTheLast_ShouldThrowPageOutOfRangeException(
       final @TempDir File testFolder, final OfficeManager manager) {
 
-    assertThatExceptionOfType(OfficeException.class)
+    assertThatExceptionOfType(PageOutOfRangeException.class)
         .isThrownBy(
             () ->
                 LocalConverter.make(manager)
                     .exportPages(IMPRESS_FILE)
                     .to(testFolder)
-                    .pages("4")
+                    .pages("2-4")
                     .execute())
-        .withMessage("Page 4 does not exist: the document has 3 pages");
+        .withMessage("Page 4 does not exist: the document has 3 pages")
+        .satisfies(
+            exception -> {
+              assertThat(exception.getPage()).isEqualTo(4);
+              assertThat(exception.getPageCount()).isEqualTo(3);
+            });
   }
 
   @Test
