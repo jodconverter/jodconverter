@@ -2560,7 +2560,7 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="v511-2026-10-15"><a href="https://github.com/jodconverter/jodconverter/tree/v5.1.1">v5.1.1</a> (2026-10-15)<a class="headerlink" href="#v511-2026-10-15" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1">Full Changelog</a></p>
-<p>A patch release: a wrong password is reported as such with the office libraries of LibreOffice, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.</p>
+<p>A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.</p>
 <h3 id="implemented-enhancements"><strong>Implemented enhancements</strong><a class="headerlink" href="#implemented-enhancements" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>PageOutOfRangeException</code>.</strong> A <a href="../../getting-started/page-images/">page export</a> whose range goes beyond the last page of the document failed with a plain <code>OfficeException</code>, the same type as a failure of the office. It now fails with a <code>PageOutOfRangeException</code>, a subclass of <code>OfficeException</code> in <code>org.jodconverter.local.office</code>, which gives the page asked for (<code>getPage()</code>) and the number of pages of the document (<code>getPageCount()</code>), so that an application can tell a wrong request from a failed office. The message is unchanged, and code that catches <code>OfficeException</code> keeps working (<a href="https://github.com/jodconverter/jodconverter/pull/591">#591</a>).</li>
@@ -2571,7 +2571,12 @@
 </ul>
 <h3 id="fixed-bugs"><strong>Fixed bugs</strong><a class="headerlink" href="#fixed-bugs" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>A wrong password was not reported with the office libraries of LibreOffice.</strong> With <code>jodconverter-local-lo</code>, which most applications use, the conversion of a protected document with a wrong password failed with <code>OfficeException: Local conversion failed</code>, caused by <code>Could not open document</code> for an OpenDocument file or by an <code>IllegalArgumentException</code> for a Microsoft Office file, instead of the <code>PasswordProtectedException</code> of 5.1.0, whose message says that the password is wrong. A missing password was reported correctly. The office libraries of OpenOffice, with which the project ran its tests, did not show the bug (<a href="https://github.com/jodconverter/jodconverter/pull/587">#587</a>).</li>
+<li>
+<p><strong>A wrong password was not reported with the office libraries of LibreOffice.</strong> With <code>jodconverter-local-lo</code>, which most applications use, the conversion of a protected document with a wrong password failed with <code>OfficeException: Local conversion failed</code>, caused by <code>Could not open document</code> for an OpenDocument file or by an <code>IllegalArgumentException</code> for a Microsoft Office file, instead of the <code>PasswordProtectedException</code> of 5.1.0, whose message says that the password is wrong. A missing password was reported correctly. The office libraries of OpenOffice, with which the project ran its tests, did not show the bug (<a href="https://github.com/jodconverter/jodconverter/pull/587">#587</a>).</p>
+</li>
+<li>
+<p><strong>Slides exported without a size followed the resolution of the display.</strong> A <a href="../../getting-started/page-images/">page export</a> without a size is documented to give the size of the page at 96 dpi, but the size was left to the office, which takes the resolution of the display: on Windows with a display scaling of 125%, a 28 cm slide came out 1323 pixels wide instead of 1058. The export now gives the office the size of the page at 96 dpi, and the images have the same size on every machine (<a href="https://github.com/jodconverter/jodconverter/pull/596">#596</a>).</p>
+</li>
 </ul>
 <h3 id="documentation"><strong>Documentation</strong><a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
 <ul>
