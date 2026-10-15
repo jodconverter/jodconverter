@@ -4,6 +4,7 @@ This page lists all migration guides for upgrading between JODConverter versions
 
 Latest migrations:
 
+- [Migration 5.1.1](./migration-guide-5.1.1.md)
 - [Migration 5.1.0](./migration-guide-5.1.0.md)
 - [Migration 5.0.1](./migration-guide-5.0.1.md)
 - [Migration 5.0.0](./migration-guide-5.0.0.md)
@@ -12,10 +13,10 @@ Latest migrations:
 - [Migration 4.4.9](./migration-guide-4.4.9.md)
 - [Migration 4.4.8](./migration-guide-4.4.8.md)
 - [Migration 4.4.7](./migration-guide-4.4.7.md)
-- [Migration 4.4.6](./migration-guide-4.4.6.md)
 
 Full list:
 
+- [Migration 5.1.1](./migration-guide-5.1.1.md)
 - [Migration 5.1.0](./migration-guide-5.1.0.md)
 - [Migration 5.0.1](./migration-guide-5.0.1.md)
 - [Migration 5.0.0](./migration-guide-5.0.0.md)

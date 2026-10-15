@@ -9,8 +9,9 @@ credentials and the signing key, which live in the repository secrets; the rest 
     `documentation`, `dependencies`): the release notes that GitHub generates are grouped by label
     (`.github/release.yml`).
 2. **Release notes page.** Write `docs/release-notes/release-notes-X.Y.Z.md` and link it from
-    `docs/release-notes/index.md` and the navigation in `zensical.toml`. For a major or minor version, the migration
-    guide `docs/migration-guides/migration-guide-X.Y.Z.md` exists and is linked the same way.
+    `docs/release-notes/index.md` and the navigation in `zensical.toml`. Every version, a patch release too, has its
+    migration guide `docs/migration-guides/migration-guide-X.Y.Z.md`, linked the same way: what users have to check
+    or change, if anything.
 3. **CHANGELOG.md.** Add the `X.Y.Z` block, one line per pull request with its number, from:
     ```bash
     gh pr list --state merged --base develop --search "merged:>YYYY-MM-DD" --json number,title --jq '.[] | "- \(.title) (#\(.number))"'

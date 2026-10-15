@@ -4,7 +4,7 @@
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1)
 
-A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.
+A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added. The [migration guide](../migration-guides/migration-guide-5.1.1.md) says what to check.
 
 ### **Implemented enhancements**
 
