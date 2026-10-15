@@ -22,6 +22,7 @@ nav = [
       { "All Releases" = "release-notes/index.md" },
     ] },
     { "Migration Guides" = [
+      { "Migration 5.1.1" = "migration-guides/migration-guide-5.1.1.md" },
       { "Migration 5.1.0" = "migration-guides/migration-guide-5.1.0.md" },
       { "Migration 5.0.1" = "migration-guides/migration-guide-5.0.1.md" },
       { "Migration 5.0.0" = "migration-guides/migration-guide-5.0.0.md" },
@@ -29,7 +30,6 @@ nav = [
       { "Migration 4.4.10" = "migration-guides/migration-guide-4.4.10.md" },
       { "Migration 4.4.9" = "migration-guides/migration-guide-4.4.9.md" },
       { "Migration 4.4.8" = "migration-guides/migration-guide-4.4.8.md" },
-      { "Migration 4.4.7" = "migration-guides/migration-guide-4.4.7.md" },
       { "All Migrations" = "migration-guides/index.md" },
     ] },
     { Credits = "credits.md" },
