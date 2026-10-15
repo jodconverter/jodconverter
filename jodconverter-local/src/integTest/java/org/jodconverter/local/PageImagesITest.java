@@ -88,7 +88,8 @@ class PageImagesITest {
     assertThat(images)
         .extracting(File::getName)
         .containsExactly("impress-1.png", "impress-2.png", "impress-3.png");
-    // Without a size, the image has the size of the page at 96 dpi (a 28 x 15.75 cm slide).
+    // Without a size, the image has the size of the page at 96 dpi (a 28 x 15.75 cm slide), also
+    // on a machine whose display has another resolution (Windows with a display scaling).
     final var image = read(images.get(0));
     assertThat(image.getWidth()).isBetween(1000, 1100);
     assertThat(image.getHeight()).isBetween(560, 620);

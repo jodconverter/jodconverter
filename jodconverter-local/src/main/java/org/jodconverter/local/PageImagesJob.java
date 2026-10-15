@@ -126,7 +126,7 @@ public final class PageImagesJob {
 
   /**
    * Specifies the size of the images, in pixels. Without a size, the images have the size of the
-   * page at 96 dpi.
+   * page at 96 dpi, whatever the resolution of the display of the machine.
    *
    * @param width The width.
    * @param height The height.
