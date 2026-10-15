@@ -1,5 +1,41 @@
 # Changelog
 
+## [v5.1.1](https://github.com/jodconverter/jodconverter/tree/v5.1.1) (2026-10-15)
+
+[Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1)
+
+A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own.
+
+**Implemented enhancements:**
+
+- `PageOutOfRangeException` for a page export whose range goes beyond the last page of the document, with the page asked for and the number of pages
+
+**Changed behaviors:**
+
+- The error output of the office process is logged at the `WARN` level instead of `ERROR`, and blank lines are no longer logged
+
+**Fixed bugs:**
+
+- A wrong password was not reported as such with the office libraries of LibreOffice (`jodconverter-local-lo`): the conversion failed with "Could not open document" or an `IllegalArgumentException` instead of a `PasswordProtectedException`
+- A page export without a size followed the resolution of the display instead of 96 dpi: 120 dpi on Windows with a display scaling of 125%
+
+**Merged pull requests:**
+
+- Export slides without a size at 96 dpi on every machine, since the office otherwise follows the resolution of the display [#596](https://github.com/jodconverter/jodconverter/pull/596)
+- Date the release notes of 5.1.1 of the day of the release [#595](https://github.com/jodconverter/jodconverter/pull/595)
+- Add a documentation badge to the README, since none of its badges led to the documentation site [#594](https://github.com/jodconverter/jodconverter/pull/594)
+- Add the release notes of 5.1.1, a patch release with the wrong-password fix, the office's error output as warnings, and PageOutOfRangeException [#593](https://github.com/jodconverter/jodconverter/pull/593)
+- Replace the copies of the sample READMEs in the documentation with one page of links to the samples repository, where they are kept current [#592](https://github.com/jodconverter/jodconverter/pull/592)
+- Throw a PageOutOfRangeException for a page beyond the last one in a page export, so that an application can tell a wrong request from a failed office [#591](https://github.com/jodconverter/jodconverter/pull/591)
+- Log the error output of the office process as warnings instead of errors, since what the office writes there is not a failure of a conversion [#590](https://github.com/jodconverter/jodconverter/pull/590)
+- Test the local module in CI with the office libraries of LibreOffice too, the ones applications use, since the default ones hid a bug of 5.1.0 [#589](https://github.com/jodconverter/jodconverter/pull/589)
+- Check that LibreOffice is installed at the end of each install step, and try the Windows install three times, after a job ran its tests without an office [#588](https://github.com/jodconverter/jodconverter/pull/588)
+- Report a wrong password as such with the office libraries of LibreOffice, where the conversion failed with "Could not open document" instead [#587](https://github.com/jodconverter/jodconverter/pull/587)
+- Do not fail the build when the coverage cannot be sent to Coveralls, since an upload that times out blocked a merge after every test had passed [#586](https://github.com/jodconverter/jodconverter/pull/586)
+- Make merging master back into develop a step of the release page, since the merge commit of a release leaves master one commit ahead [#585](https://github.com/jodconverter/jodconverter/pull/585)
+- Merge master back into develop after the release of 5.1.0 [#584](https://github.com/jodconverter/jodconverter/pull/584)
+- Post release 5.1.0: move develop to 5.1.1-SNAPSHOT [#583](https://github.com/jodconverter/jodconverter/pull/583)
+
 ## [v5.1.0](https://github.com/jodconverter/jodconverter/tree/v5.1.0) (2026-10-11)
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.0.1...v5.1.0)

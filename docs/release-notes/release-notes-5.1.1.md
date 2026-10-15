@@ -4,7 +4,7 @@
 
 [Full Changelog](https://github.com/jodconverter/jodconverter/compare/v5.1.0...v5.1.1)
 
-A patch release: a wrong password is reported as such with the office libraries of LibreOffice, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.
+A patch release: a wrong password is reported as such with the office libraries of LibreOffice, slides exported without a size have the same size on every machine, the error output of the office is no longer logged as errors, and a page export beyond the last page fails with an exception of its own. Nothing changes or goes away in the API; one exception class is added.
 
 ### **Implemented enhancements**
 
@@ -17,6 +17,8 @@ A patch release: a wrong password is reported as such with the office libraries 
 ### **Fixed bugs**
 
 - **A wrong password was not reported with the office libraries of LibreOffice.** With `jodconverter-local-lo`, which most applications use, the conversion of a protected document with a wrong password failed with `OfficeException: Local conversion failed`, caused by `Could not open document` for an OpenDocument file or by an `IllegalArgumentException` for a Microsoft Office file, instead of the `PasswordProtectedException` of 5.1.0, whose message says that the password is wrong. A missing password was reported correctly. The office libraries of OpenOffice, with which the project ran its tests, did not show the bug ([#587](https://github.com/jodconverter/jodconverter/pull/587)).
+
+- **Slides exported without a size followed the resolution of the display.** A [page export](../getting-started/page-images.md) without a size is documented to give the size of the page at 96 dpi, but the size was left to the office, which takes the resolution of the display: on Windows with a display scaling of 125%, a 28 cm slide came out 1323 pixels wide instead of 1058. The export now gives the office the size of the page at 96 dpi, and the images have the same size on every machine ([#596](https://github.com/jodconverter/jodconverter/pull/596)).
 
 ### **Documentation**
 
