@@ -9,7 +9,7 @@ java = "17"
 
 # Checker Framework
 # Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-checker-qual = "4.3.0"
+checker-qual = "4.3.1"
 
 # Apache Commons
 # Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
@@ -95,7 +95,7 @@ coveralls-jacoco = "1.2.20"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "8.10.3"
+spotless = "8.10.4"
 
 # Google Java Format, used by Spotless
 # Latest version -> https://github.com/google/google-java-format/releases
