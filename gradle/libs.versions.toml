@@ -9,7 +9,7 @@ java = "17"
 
 # Checker Framework
 # Latest version -> https://mvnrepository.com/artifact/org.checkerframework/checker-qual
-checker-qual = "4.3.1"
+checker-qual = "4.4.0"
 
 # Apache Commons
 # Latest version -> https://mvnrepository.com/artifact/commons-cli/commons-cli
@@ -20,12 +20,12 @@ commons-io = "2.22.0"
 # Spring Boot
 # Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-spring-boot = "4.1.1"
+spring-boot = "4.1.2"
 
 # Spring Framework, only spring-test is used, by the tests of the modules
 # Stay on the version managed by the Spring Boot version above
 # Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
-spring = "7.0.9"
+spring = "7.0.10"
 
 # SLF4J
 # Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -37,7 +37,7 @@ log4j = "2.26.1"
 
 # Gson
 # Latest version -> https://mvnrepository.com/artifact/com.google.code.gson/gson
-gson = "2.14.0"
+gson = "2.15.0"
 
 # SnakeYAML Engine, used by jodconverter-cli for the YAML configuration files
 # Latest version -> https://mvnrepository.com/artifact/org.snakeyaml/snakeyaml-engine
@@ -95,7 +95,7 @@ coveralls-jacoco = "1.2.20"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "8.10.4"
+spotless = "8.11.0"
 
 # Google Java Format, used by Spotless
 # Latest version -> https://github.com/google/google-java-format/releases
