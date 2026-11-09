@@ -9,13 +9,13 @@ on:
     branches:
       - develop
       - master
-  # The macOS job only, once a day (see the matrix below).
+  # The macOS job only, once a week on Monday (see the matrix below).
   schedule:
-    - cron: '17 6 * * *'
+    - cron: '17 6 * * 1'
   workflow_dispatch:
     inputs:
       macos:
-        description: 'Run the macOS job only, as the daily run does'
+        description: 'Run the macOS job only, as the weekly run does'
         type: boolean
         default: false
 
@@ -48,14 +48,14 @@ jobs:
       # workstation; the still and fresh packages of Chocolatey are both 26.2.6), so Windows
       # reports but does not block a merge.
       #
-      # macOS runs once a day only, on its own. LibreOffice looks up the host name of 127.0.0.1
+      # macOS runs once a week only, on its own. LibreOffice looks up the host name of 127.0.0.1
       # when it accepts a UNO connection, and on the macOS 15 and 26 images the first such lookup
       # of a process takes 35 s (seven resolver scopes of 5 s each, through mDNSResponder; neither
       # /etc/hosts, the host name nor a resolver file shortens it): every office start waits that
       # long, and tests exceed their queue timeout. The macOS 14 image, which answered at once,
       # was retired in November 2026; on macos-26, a getnameinfo probe in Python answered at once
       # on 2026-11-09 while the office starts of the same image still took 30 to 39 s, so judge an
-      # image by this job, not by the probe. The daily run turns green once an image no longer
+      # image by this job, not by the probe. The weekly run turns green once an image no longer
       # waits; macOS can then come back to the pull requests.
       matrix:
         include: ${{ fromJSON((github.event_name == 'schedule' || inputs.macos) && '[{"os":"macos-26"}]' || '[{"os":"ubuntu-latest"},{"os":"windows-latest","allow-failure":true}]') }}
@@ -213,7 +213,7 @@ jobs:
   # The single check to require in the branch rulesets: it passes only when every OS that is
   # not allowed to fail passed, and the tests with the LibreOffice libraries too.
   # Rename it only together with the rulesets, or pull requests wait forever for a check
-  # that no longer reports. Not part of the daily macOS run, whose result is that of its job.
+  # that no longer reports. Not part of the weekly macOS run, whose result is that of its job.
   build:
     name: build
     if: always() && github.event_name != 'schedule' && !inputs.macos
