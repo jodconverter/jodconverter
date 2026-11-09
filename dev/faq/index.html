@@ -2561,44 +2561,52 @@ Note that the more office process you start, the more RAM will be consumed by Li
 <span class="w">    </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">security</span><span class="p">(</span><span class="n">security</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">security</span><span class="p">.</span><span class="na">openPassword</span><span class="p">(</span><span class="s">"test"</span><span class="p">)).</span><span class="na">build</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
-<p>With older versions, you must set 2 filter properties, <code>EncryptFile</code> and <code>DocumentOpenPassword</code>.</p>
-<p>Here's how this could be done:</p>
-<div class="language-java highlight"><pre><span></span><code><span class="n">File</span><span class="w"> </span><span class="n">inputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.doc"</span><span class="p">);</span>
-<span class="n">File</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="s">"document.pdf"</span><span class="p">);</span>
-
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">filterData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"EncryptFile"</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"DocumentOpenPassword"</span><span class="p">,</span><span class="s">"test"</span><span class="p">);</span>
-
-<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">customProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">customProperties</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"FilterData"</span><span class="p">,</span><span class="n">filterData</span><span class="p">);</span>
-
-<span class="n">LocalConverter</span>
-<span class="w">    </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">storeProperties</span><span class="p">(</span><span class="n">customProperties</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">inputFile</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">outputFile</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
-</code></pre></div>
-<p>OR</p>
+<p>Older versions set the <code>EncryptFile</code> and <code>DocumentOpenPassword</code> properties of the <code>FilterData</code> by hand; see the
+next question to move such code to <code>PdfOptions</code>.</p>
+</details>
+<details class="question">
+<summary>I build the PDF <code>FilterData</code> by hand, with string keys. How do I move to <code>PdfOptions</code>?</summary>
+<p>Since JODConverter 5.0, <a href="../getting-started/pdf-options/"><code>PdfOptions</code></a> has a method for each property of the
+PDF export filter, so the property names, their value types and their units no longer live in your code. Code
+such as:</p>
 <div class="language-java highlight"><pre><span></span><code><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">filterData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"EncryptFile"</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"DocumentOpenPassword"</span><span class="p">,</span><span class="s">"test"</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"SelectPdfVersion"</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"ReduceImageResolution"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"MaxImageResolution"</span><span class="p">,</span><span class="w"> </span><span class="mi">150</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"Watermark"</span><span class="p">,</span><span class="w"> </span><span class="s">"DRAFT"</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"WatermarkColor"</span><span class="p">,</span><span class="w"> </span><span class="mi">12632256</span><span class="p">);</span>
+<span class="n">filterData</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"WatermarkFontHeight"</span><span class="p">,</span><span class="w"> </span><span class="mi">120</span><span class="p">);</span>
 
 <span class="n">DocumentFormat</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">DocumentFormat</span>
-<span class="w">        </span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="n">DocumentFormat</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">DefaultDocumentFormatRegistry</span><span class="p">.</span><span class="na">PDF</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">storeProperty</span><span class="p">(</span><span class="n">DocumentFamily</span><span class="p">.</span><span class="na">TEXT</span><span class="p">,</span><span class="w"> </span><span class="s">"FilterData"</span><span class="p">,</span><span class="w"> </span><span class="n">filterData</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
-<span class="n">JodConverter</span>
-<span class="w">    </span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">).</span><span class="na">as</span><span class="p">(</span><span class="n">format</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
 </code></pre></div>
+<p>becomes:</p>
+<div class="language-java highlight"><pre><span></span><code><span class="n">PdfOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PdfOptions</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">version</span><span class="p">(</span><span class="n">PdfVersion</span><span class="p">.</span><span class="na">PDF_A_2B</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">images</span><span class="p">(</span><span class="n">images</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">images</span><span class="p">.</span><span class="na">reduceResolution</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">maxResolution</span><span class="p">(</span><span class="mi">150</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">watermark</span><span class="p">(</span><span class="n">watermark</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">watermark</span><span class="p">.</span><span class="na">text</span><span class="p">(</span><span class="s">"DRAFT"</span><span class="p">).</span><span class="na">color</span><span class="p">(</span><span class="mh">0xC0C0C0</span><span class="p">).</span><span class="na">fontHeight</span><span class="p">(</span><span class="mi">120</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+<span class="n">converter</span><span class="p">.</span><span class="na">convert</span><span class="p">(</span><span class="n">source</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="n">target</span><span class="p">).</span><span class="na">with</span><span class="p">(</span><span class="n">options</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
+</code></pre></div>
+<ul>
+<li><strong>Finding the method of a property.</strong> The <a href="../getting-started/pdf-options/#options">tables of the options</a> give,
+    for each method, the <code>FilterData</code> property it sets and the first office version that reads it.</li>
+<li><strong>A property without a method</strong> is set with
+    <a href="../getting-started/pdf-options/#any-other-property"><code>filterData(name, value)</code></a>, next to the typed options.</li>
+<li><strong>Options read from a configuration file</strong> are applied by name with
+    <a href="../getting-started/pdf-options/#options-by-name"><code>option(name, value)</code></a>, such as <code>option("version", "a-2b")</code>.</li>
+<li><strong>The same options for every conversion</strong> are set once on the converter with
+    <a href="../getting-started/pdf-options/#default-options-of-a-converter"><code>defaultTargetOptions</code></a>.</li>
+<li>Unlike a <code>FilterData</code> stored for one document family, the options apply to every kind of document converted
+    to PDF, and <code>build()</code> rejects the combinations that cannot work, such as a password with a PDF/A version.</li>
+</ul>
 </details>
 <details class="question">
 <summary>How could I specify the password of a password-protected file (input file) to convert?</summary>
