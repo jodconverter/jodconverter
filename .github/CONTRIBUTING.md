@@ -63,8 +63,9 @@ Unit tests live in `src/test/java`. Tests that need a running office live in `sr
 - Target the `develop` branch.
 - Fill in the pull request template, and link the issue the pull request fixes (`Fixes #123`).
 - The `build` check must pass. It runs the full build and the tests, integration tests included, on Linux. The same
-  build runs on Windows and macOS too: these two jobs report without blocking a merge, so look at them when your
-  change is specific to one of these systems. CodeQL analyzes the code of every pull request.
+  build runs on Windows too, and reports without blocking a merge; on macOS it runs once a week on `develop`, and on
+  demand from the Actions tab (the `macos` input of the `build` workflow). Look at them when your change is specific
+  to one of these systems. CodeQL analyzes the code of every pull request.
 - Keep a pull request focused on one change; smaller pull requests get reviewed faster.
 
 ## For maintainers
