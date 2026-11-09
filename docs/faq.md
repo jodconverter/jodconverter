@@ -79,50 +79,56 @@ class: hide-toc
         .execute();
     ```
 
-    With older versions, you must set 2 filter properties, `EncryptFile` and `DocumentOpenPassword`.
+    Older versions set the `EncryptFile` and `DocumentOpenPassword` properties of the `FilterData` by hand; see the
+    next question to move such code to `PdfOptions`.
 
-    Here's how this could be done:
+??? question "I build the PDF `FilterData` by hand, with string keys. How do I move to `PdfOptions`?"
 
-    ```java
-    File inputFile = new File("document.doc");
-    File outputFile = new File("document.pdf");
-
-    Map<String, Object> filterData = new HashMap<>();
-    filterData.put("EncryptFile",true);
-    filterData.put("DocumentOpenPassword","test");
-
-    Map<String, Object> customProperties = new HashMap<>();
-    customProperties.put("FilterData",filterData);
-
-    LocalConverter
-        .builder()
-        .storeProperties(customProperties)
-        .build()
-        .convert(inputFile)
-        .to(outputFile)
-        .execute();
-    ```
-
-    OR
+    Since JODConverter 5.0, [`PdfOptions`](getting-started/pdf-options.md) has a method for each property of the
+    PDF export filter, so the property names, their value types and their units no longer live in your code. Code
+    such as:
 
     ```java
     Map<String, Object> filterData = new HashMap<>();
-    filterData.put("EncryptFile",true);
-    filterData.put("DocumentOpenPassword","test");
+    filterData.put("SelectPdfVersion", 2);
+    filterData.put("ReduceImageResolution", true);
+    filterData.put("MaxImageResolution", 150);
+    filterData.put("Watermark", "DRAFT");
+    filterData.put("WatermarkColor", 12632256);
+    filterData.put("WatermarkFontHeight", 120);
 
     DocumentFormat format =
-        DocumentFormat
-            .builder()
+        DocumentFormat.builder()
             .from(DefaultDocumentFormatRegistry.PDF)
             .storeProperty(DocumentFamily.TEXT, "FilterData", filterData)
             .build();
 
-    JodConverter
-        .convert(source)
-        .to(target)
-        .as(format)
-        .execute();
+    converter.convert(source).to(target).as(format).execute();
     ```
+
+    becomes:
+
+    ```java
+    PdfOptions options =
+        PdfOptions.builder()
+            .version(PdfVersion.PDF_A_2B)
+            .images(images -> images.reduceResolution(true).maxResolution(150))
+            .watermark(watermark -> watermark.text("DRAFT").color(0xC0C0C0).fontHeight(120))
+            .build();
+
+    converter.convert(source).to(target).with(options).execute();
+    ```
+
+    - **Finding the method of a property.** The [tables of the options](getting-started/pdf-options.md#options) give,
+        for each method, the `FilterData` property it sets and the first office version that reads it.
+    - **A property without a method** is set with
+        [`filterData(name, value)`](getting-started/pdf-options.md#any-other-property), next to the typed options.
+    - **Options read from a configuration file** are applied by name with
+        [`option(name, value)`](getting-started/pdf-options.md#options-by-name), such as `option("version", "a-2b")`.
+    - **The same options for every conversion** are set once on the converter with
+        [`defaultTargetOptions`](getting-started/pdf-options.md#default-options-of-a-converter).
+    - Unlike a `FilterData` stored for one document family, the options apply to every kind of document converted
+        to PDF, and `build()` rejects the combinations that cannot work, such as a password with a PDF/A version.
 
 ??? question "How could I specify the password of a password-protected file (input file) to convert?"
 
