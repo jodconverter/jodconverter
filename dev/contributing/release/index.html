@@ -2553,8 +2553,8 @@ credentials and the signing key, which live in the repository secrets; the rest 
 </code></pre></div>
     The task writes <code>version</code> in <code>gradle.properties</code> and, for a release version, replaces the previous released
     version in the pages of the documentation that show dependency coordinates.</li>
-<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux, Windows and macOS,
-    but the two last ones do not block a merge; a release deserves a run on the release machine too:
+<li><strong>Full build and integration tests, locally.</strong> The continuous integration runs them on Linux and Windows,
+    and on macOS once a week, but the two last ones do not block a merge; a release deserves a run on the release machine too:
     <div class="language-bash highlight"><pre><span></span><code>./gradlew<span class="w"> </span>clean<span class="w"> </span>build<span class="w"> </span>integrationTest
 </code></pre></div></li>
 <li><strong>Release commit.</strong> On a <code>release/X.Y.Z</code> branch, commit with the message <code>Release X.Y.Z</code> and open its pull
