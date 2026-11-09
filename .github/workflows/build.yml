@@ -9,11 +9,20 @@ on:
     branches:
       - develop
       - master
+  # The macOS job only, once a day (see the matrix below).
+  schedule:
+    - cron: '17 6 * * *'
   workflow_dispatch:
+    inputs:
+      macos:
+        description: 'Run the macOS job only, as the daily run does'
+        type: boolean
+        default: false
 
-# A new push to the same pull request or branch cancels the run in progress.
+# A new push to the same pull request or branch cancels the run in progress. The macOS runs have
+# their own group, so that a push to develop does not cancel them.
 concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ (github.event_name == 'schedule' || inputs.macos) && 'macos-' || '' }}${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -33,24 +42,23 @@ jobs:
     strategy:
       # Let every OS report, so an OS-specific failure is not hidden by another one.
       fail-fast: false
+      # Pull requests and pushes: Linux and Windows. On the GitHub Windows runners, LibreOffice
+      # 26.2 crashes now and then when it closes a presentation or a drawing it has just stored or
+      # exported, a different test on each run (seen on 2026-10-08, and with an unpacked 26.2 on a
+      # workstation; the still and fresh packages of Chocolatey are both 26.2.6), so Windows
+      # reports but does not block a merge.
+      #
+      # macOS runs once a day only, on its own. LibreOffice looks up the host name of 127.0.0.1
+      # when it accepts a UNO connection, and on the macOS 15 and 26 images the first such lookup
+      # of a process takes 35 s (seven resolver scopes of 5 s each, through mDNSResponder; neither
+      # /etc/hosts, the host name nor a resolver file shortens it): every office start waits that
+      # long, and tests exceed their queue timeout. The macOS 14 image, which answered at once,
+      # was retired in November 2026; on macos-26, a getnameinfo probe in Python answered at once
+      # on 2026-11-09 while the office starts of the same image still took 30 to 39 s, so judge an
+      # image by this job, not by the probe. The daily run turns green once an image no longer
+      # waits; macOS can then come back to the pull requests.
       matrix:
-        include:
-          - os: ubuntu-latest
-          # On the GitHub Windows runners, LibreOffice 26.2 crashes now and then when it closes a
-          # presentation or a drawing it has just stored or exported, a different test on each run
-          # (seen on 2026-10-08, and with an unpacked 26.2 on a workstation; the still and fresh
-          # packages of Chocolatey are both 26.2.6). It reports but does not block a merge.
-          - os: windows-latest
-            allow-failure: true
-          # Pinned, not macos-latest: LibreOffice looks up the host name of 127.0.0.1 when it
-          # accepts a UNO connection, and on some images the first such lookup of a process takes
-          # 35 s (seven resolver scopes of 5 s each), so every office start waits that long. On
-          # 2026-10-08 the macOS 15 and 26 images did, on arm64 and Intel; on 2026-11-09 (macOS
-          # 14 retired) the arm64 images of macOS 15.8.2 and 26.7.2 answered at once, and only the
-          # Intel macOS 15 image still waited. Measure getnameinfo(127.0.0.1) before switching
-          # images. It reports but does not block a merge.
-          - os: macos-26
-            allow-failure: true
+        include: ${{ fromJSON((github.event_name == 'schedule' || inputs.macos) && '[{"os":"macos-26"}]' || '[{"os":"ubuntu-latest"},{"os":"windows-latest","allow-failure":true}]') }}
 
     steps:
       - name: 🪟 Use CRLF line endings on Windows
@@ -163,6 +171,7 @@ jobs:
   # of the local module with the libraries that applications use.
   test-libreoffice-libraries:
     name: test (LibreOffice libraries)
+    if: github.event_name != 'schedule' && !inputs.macos
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -204,10 +213,10 @@ jobs:
   # The single check to require in the branch rulesets: it passes only when every OS that is
   # not allowed to fail passed, and the tests with the LibreOffice libraries too.
   # Rename it only together with the rulesets, or pull requests wait forever for a check
-  # that no longer reports.
+  # that no longer reports. Not part of the daily macOS run, whose result is that of its job.
   build:
     name: build
-    if: always()
+    if: always() && github.event_name != 'schedule' && !inputs.macos
     needs: [test, test-libreoffice-libraries]
     runs-on: ubuntu-latest
     timeout-minutes: 5
