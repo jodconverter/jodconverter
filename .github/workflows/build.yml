@@ -125,10 +125,14 @@ jobs:
           # example, must not fail the step.
           exit 0
 
+      # brew update first: the runner image ships an older copy of the Homebrew casks, and the
+      # download server keeps only the latest patch release of each LibreOffice line. On
+      # 2026-11-05 the image still had 26.8.0, which answered 404 once 26.8.1 and 26.8.2 were out.
       - name: 📥 Install LibreOffice (macOS)
         if: runner.os == 'macOS'
         timeout-minutes: 10
         run: |
+          brew update
           brew install --cask libreoffice
           test -x /Applications/LibreOffice.app/Contents/MacOS/soffice
 
