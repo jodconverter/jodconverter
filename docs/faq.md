@@ -286,8 +286,9 @@ These are LibreOffice behaviors that **JODConverter** can't change, with the wor
     time it starts: every start, and every restart, then waits that long before its first conversion. Nothing fails,
     but a `processTimeout` or a `taskQueueTimeout` shorter than that delay can be exceeded.
 
-    We measured it on the macOS 15 and macOS 26 images of the GitHub Actions runners (Apple silicon and Intel), and
-    not on their macOS 14 image; we do not know how common it is on other machines. To check a machine, time the
+    We measured it in October 2026 on the macOS 15 and macOS 26 images of the GitHub Actions runners (Apple silicon
+    and Intel), and not on their macOS 14 image. In November 2026, it was gone from the Apple silicon images (macOS
+    15.8.2 and 26.7.2) and still there on the Intel macOS 15 image; we do not know how common it is on other machines. To check a machine, time the
     lookup in a new process:
 
     ```bash

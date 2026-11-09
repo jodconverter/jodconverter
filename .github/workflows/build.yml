@@ -42,12 +42,14 @@ jobs:
           # packages of Chocolatey are both 26.2.6). It reports but does not block a merge.
           - os: windows-latest
             allow-failure: true
-          # macOS 14 on purpose. On the macOS 15 and 26 images (macos-latest), the first reverse
-          # lookup of 127.0.0.1 in a process takes 35 s (seven resolver scopes of 5 s each, measured
-          # on 2026-10-08 with getnameinfo, on arm64 and Intel), and LibreOffice does that lookup
-          # when it accepts a UNO connection: every office start waited 35 s for the answer to its
-          # first request. The macOS 14 image answers at once. It reports but does not block a merge.
-          - os: macos-14
+          # Pinned, not macos-latest: LibreOffice looks up the host name of 127.0.0.1 when it
+          # accepts a UNO connection, and on some images the first such lookup of a process takes
+          # 35 s (seven resolver scopes of 5 s each), so every office start waits that long. On
+          # 2026-10-08 the macOS 15 and 26 images did, on arm64 and Intel; on 2026-11-09 (macOS
+          # 14 retired) the arm64 images of macOS 15.8.2 and 26.7.2 answered at once, and only the
+          # Intel macOS 15 image still waited. Measure getnameinfo(127.0.0.1) before switching
+          # images. It reports but does not block a merge.
+          - os: macos-26
             allow-failure: true
 
     steps:
