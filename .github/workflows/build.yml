@@ -78,7 +78,7 @@ jobs:
       - name: ☕ Set up JDK 17
         # Runs Gradle. The code is compiled and tested on the Java version set in
         # gradle/libs.versions.toml, through a Gradle toolchain that is downloaded when missing.
-        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -186,7 +186,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: ☕ Set up JDK 17
-        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           java-version: '17'
           distribution: 'temurin'
