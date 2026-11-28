@@ -20,12 +20,12 @@ commons-io = "2.22.0"
 # Spring Boot
 # Its BOM is only used by jodconverter-spring-boot-starter
 # Latest version -> https://mvnrepository.com/artifact/org.springframework.boot/spring-boot
-spring-boot = "4.1.2"
+spring-boot = "4.2.0"
 
 # Spring Framework, only spring-test is used, by the tests of the modules
 # Stay on the version managed by the Spring Boot version above
 # Latest version -> https://mvnrepository.com/artifact/org.springframework/spring-core
-spring = "7.0.10"
+spring = "7.1.0"
 
 # SLF4J
 # Latest version -> https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -95,7 +95,7 @@ coveralls-jacoco = "1.2.20"
 
 # Spotless plugin
 # Latest version -> https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-spotless = "8.11.0"
+spotless = "8.12.0"
 
 # Google Java Format, used by Spotless
 # Latest version -> https://github.com/google/google-java-format/releases
